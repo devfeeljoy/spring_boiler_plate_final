@@ -3,8 +3,10 @@ package com.sparta.spring1week.controller;
 import com.sparta.spring1week.dto.BlogDeleteDto;
 import com.sparta.spring1week.dto.BlogRequestDto;
 import com.sparta.spring1week.dto.BlogResponseDto;
+import com.sparta.spring1week.entity.User;
 import com.sparta.spring1week.service.BlogService;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

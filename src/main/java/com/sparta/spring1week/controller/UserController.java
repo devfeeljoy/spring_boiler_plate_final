@@ -1,9 +1,12 @@
 package com.sparta.spring1week.controller;
 
 import com.sparta.spring1week.dto.*;
+import com.sparta.spring1week.entity.User;
 import com.sparta.spring1week.service.UserService;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,7 +17,7 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/api/signup")
-    public SignupResponseDto signup(@RequestBody SignupRequestDto signupRequestDto) {
+    public SignupResponseDto signup(@Valid @RequestBody SignupRequestDto signupRequestDto) {
 
       return userService.signup(signupRequestDto);
     }
