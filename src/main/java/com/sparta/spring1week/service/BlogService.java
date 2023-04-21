@@ -95,12 +95,8 @@ public class BlogService {
                     () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
             );
 
-            // username 받아온 값을 추가
-            // Blog blog =  blogRepository.saveAndFlush(new Blog(requestDto, user.getUsername()));
-
-            //Blog blog = new Blog();
             Blog blog = checkblog(id);
-            //Blog blog =  blogRepository.saveAndFlush(new Blog(requestDto, user.getUsername()));
+
             blog.update(requestDto);
 
             return new BlogResponseDto(blog);
