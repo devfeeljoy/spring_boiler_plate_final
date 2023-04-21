@@ -18,29 +18,29 @@ public class BlogController {
 
     private final BlogService blogService;
 
-    @PostMapping("/create")
+    @PostMapping("/api/post")
     public BlogResponseDto createList(@RequestBody BlogRequestDto requestDto, HttpServletRequest request){
 
         return blogService.createList(requestDto, request);
     }
 
     //조회부분은 수정할 필요가 없음
-    @GetMapping("/list")
+    @GetMapping("/api/posts")
     public List<BlogResponseDto> getlist(){
         return blogService.getlist();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/api/post/{id}")
     public BlogResponseDto getidList(@PathVariable Long id) {
         return (BlogResponseDto) blogService.getidlist(id);
     }
 
-    @PutMapping("/update/{id}")
+    @PutMapping("/api/post/{id}")
     public BlogResponseDto updateCourse(@PathVariable Long id, @RequestBody BlogRequestDto requestDto, HttpServletRequest request) {
         return blogService.updateBlog(id, requestDto, request);
     }
 
-    @DeleteMapping("/delete/{id}")
+    @DeleteMapping("/api/post/{id}")
     public BlogDeleteDto deleteblog(@PathVariable Long id, HttpServletRequest request){
         return blogService.deleteBlog(id, request);
     }

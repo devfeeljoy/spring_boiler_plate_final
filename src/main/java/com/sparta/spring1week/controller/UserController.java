@@ -16,13 +16,13 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/api/signup")
+    @PostMapping("/api/auth/signup")
     public SignupResponseDto signup(@Valid @RequestBody SignupRequestDto signupRequestDto) {
 
       return userService.signup(signupRequestDto);
     }
 
-    @PostMapping("/api/login")
+    @PostMapping("/api/auth/login")
     public LoginResponseDto login(@RequestBody LoginRequestDto loginRequestDto, HttpServletResponse response) {
 
         return userService.login(loginRequestDto, response);
