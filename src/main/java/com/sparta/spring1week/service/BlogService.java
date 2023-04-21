@@ -6,6 +6,7 @@ import com.sparta.spring1week.dto.BlogResponseDto;
 import com.sparta.spring1week.dto.SignupResponseDto;
 import com.sparta.spring1week.entity.Blog;
 import com.sparta.spring1week.entity.User;
+import com.sparta.spring1week.entity.UserRoleEnum;
 import com.sparta.spring1week.jwt.JwtUtil;
 import com.sparta.spring1week.repository.BlogRepository;
 import com.sparta.spring1week.repository.UserRepository;
@@ -95,11 +96,22 @@ public class BlogService {
                     () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
             );
 
+
+            UserRoleEnum userRoleEnum = user.getRole();
+            System.out.println("role = " + userRoleEnum);
+
             Blog blog = checkblog(id);
+            if(user.getUsername().equals(blog.getUsername())) {
+                blog.update(requestDto);
+                return new BlogResponseDto(blog);
+            } else if(userRoleEnum == UserRoleEnum.ADMIN){
+                blog.update(requestDto);
+                return new BlogResponseDto(blog);
+            }
+            else{
+                throw new IllegalArgumentException("게시물에 접근 권한이 없습니다.");
+            }
 
-            blog.update(requestDto);
-
-            return new BlogResponseDto(blog);
         }else {
             throw new IllegalArgumentException("토큰값이 없습니다");
         }
@@ -129,10 +141,15 @@ public class BlogService {
                     () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
             );
             Blog blog = checkblog(id);
-            blogRepository.deleteById(id);
+            if(user.getUsername().equals(blog.getUsername())) {
+                blogRepository.deleteById(id);
+                return new BlogDeleteDto("게시글 삭제 성공.", 200);
+            }
+            else{
+                return new BlogDeleteDto("게시글 작성자가 아닙니다.", 400);
+            }
 
 
-        return new BlogDeleteDto("게시글 삭제 성공.", 200);
         }else{
             return new BlogDeleteDto("토큰값이 존재하지 않습니다.", 400);
         }

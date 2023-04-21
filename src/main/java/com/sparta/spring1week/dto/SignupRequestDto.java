@@ -18,9 +18,12 @@ public class SignupRequestDto {
     private String username;
 
     @NotNull(message = "pw는 필수 값입니다.")
-    @Pattern(regexp = "[a-zA-z0-9]+")
+    @Pattern(regexp = "[a-zA-Z0-9]+")
     @Size(min = 8, max = 15)
     private String password;
+
+    private boolean admin = false;
+    private String adminToken = "";
 
 
 
