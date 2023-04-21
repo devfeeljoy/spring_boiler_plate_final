@@ -6,9 +6,11 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class BlogDeleteDto {
-    private boolean success;
+    private String msg;
+    private int statusCod;
 
-    public void setSuccess(boolean success) {
-        this.success = success;
+    public BlogDeleteDto(String msg, int statusCod) {
+        this.msg = msg;
+        this.statusCod = statusCod;
     }
 }

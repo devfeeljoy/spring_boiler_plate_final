@@ -22,6 +22,7 @@ public class BlogController {
         return blogService.createList(requestDto, request);
     }
 
+    //조회부분은 수정할 필요가 없음
     @GetMapping("/list")
     public List<BlogResponseDto> getlist(){
         return blogService.getlist();
@@ -33,13 +34,13 @@ public class BlogController {
     }
 
     @PutMapping("/update/{id}")
-    public BlogResponseDto updateCourse(@PathVariable Long id, @RequestBody BlogRequestDto requestDto) {
-        return blogService.updateBlog(id, requestDto);
+    public BlogResponseDto updateCourse(@PathVariable Long id, @RequestBody BlogRequestDto requestDto, HttpServletRequest request) {
+        return blogService.updateBlog(id, requestDto, request);
     }
 
     @DeleteMapping("/delete/{id}")
-    public BlogDeleteDto deleteblog(@PathVariable Long id, @RequestBody BlogRequestDto requestDto){
-        return blogService.deleteBlog(id, requestDto);
+    public BlogDeleteDto deleteblog(@PathVariable Long id, HttpServletRequest request){
+        return blogService.deleteBlog(id, request);
     }
 
 
