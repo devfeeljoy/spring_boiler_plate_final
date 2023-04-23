@@ -1,14 +1,16 @@
 package com.sparta.spring1week.service;
 
-import com.sparta.spring1week.dto.BlogDeleteDto;
+import com.sparta.spring1week.dto.ResponseCodeDto;
 import com.sparta.spring1week.dto.BlogRequestDto;
 import com.sparta.spring1week.dto.BlogResponseDto;
-import com.sparta.spring1week.dto.SignupResponseDto;
 import com.sparta.spring1week.entity.Blog;
 import com.sparta.spring1week.entity.User;
 import com.sparta.spring1week.entity.UserRoleEnum;
+import com.sparta.spring1week.exception.BusinessExceptionHandler;
+import com.sparta.spring1week.exception.ErrorCode;
 import com.sparta.spring1week.jwt.JwtUtil;
 import com.sparta.spring1week.repository.BlogRepository;
+import com.sparta.spring1week.repository.CommentRepository;
 import com.sparta.spring1week.repository.UserRepository;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
@@ -18,13 +20,13 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class BlogService {
     private final BlogRepository blogRepository;
     private final UserRepository userRepository;
+    private final CommentRepository commentRepository;
     private final JwtUtil jwtUtil;
 
 
@@ -39,21 +41,21 @@ public class BlogService {
             if(jwtUtil.validateToken(token)){
                 claims = jwtUtil.getUserInfoFromToken(token);
             } else{
-                throw new IllegalArgumentException("Token Error");
+                throw new BusinessExceptionHandler(ErrorCode.TOKEN_ERROR);
             }
 
 
         User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
+                () -> new BusinessExceptionHandler(ErrorCode.USER_ERROR)
         );
 
-        // username 받아온 값을 추가
-        Blog blog =  blogRepository.saveAndFlush(new Blog(requestDto, user.getUsername()));
+        // username 받아온 값을 추가, user값 추가(user의 주소?)
+        Blog blog =  blogRepository.saveAndFlush(new Blog(requestDto, user.getUsername(), user));
 
 
         return new BlogResponseDto(blog);
         }else{
-            throw new IllegalArgumentException("토큰값이 없습니다");
+            throw new BusinessExceptionHandler(ErrorCode.TOKEN_NULL_ERROR);
         }
 
 }
@@ -61,6 +63,7 @@ public class BlogService {
 
     public List<BlogResponseDto> getlist(){
         List<Blog> bloglist = blogRepository.findAllByOrderByModifiedAtDesc();
+        //List<Comment> commnet = commentRepository.findAll();
         List<BlogResponseDto> blogResponseDto = new ArrayList<>();
         //내림차순된 정보를 가지고와서 responsedto에 넣어줌
         for (Blog blog : bloglist){
@@ -79,6 +82,8 @@ public class BlogService {
     }
 
 
+
+
     @Transactional
     public BlogResponseDto updateBlog(Long id, BlogRequestDto requestDto, HttpServletRequest request) {
         String token = jwtUtil.resolveToken(request);
@@ -88,12 +93,13 @@ public class BlogService {
             if (jwtUtil.validateToken(token)) {
                 claims = jwtUtil.getUserInfoFromToken(token);
             } else {
-                throw new IllegalArgumentException("Token Error");
+                throw new BusinessExceptionHandler(ErrorCode.TOKEN_ERROR);
             }
 
 
             User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                    () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
+                    () -> new BusinessExceptionHandler(ErrorCode.USER_ERROR)
+
             );
 
 
@@ -109,23 +115,23 @@ public class BlogService {
                 return new BlogResponseDto(blog);
             }
             else{
-                throw new IllegalArgumentException("게시물에 접근 권한이 없습니다.");
+                throw new BusinessExceptionHandler(ErrorCode.MODIFY_ERROR);
             }
 
         }else {
-            throw new IllegalArgumentException("토큰값이 없습니다");
+            throw new BusinessExceptionHandler(ErrorCode.TOKEN_NULL_ERROR);
         }
     }
 
     private Blog checkblog(Long id) {
         return blogRepository.findById(id).orElseThrow(
-                () -> new NullPointerException("선택한 메모가 존재하지 않습니다.")
+                () -> new BusinessExceptionHandler(ErrorCode.BLOG_ERROR)
         );
     }
 
 
     @Transactional
-    public BlogDeleteDto deleteBlog(Long id, HttpServletRequest request) {
+    public ResponseCodeDto deleteBlog(Long id, HttpServletRequest request) {
         String token = jwtUtil.resolveToken(request);
         Claims claims;
 
@@ -133,25 +139,30 @@ public class BlogService {
             if (jwtUtil.validateToken(token)) {
                 claims = jwtUtil.getUserInfoFromToken(token);
             } else {
-                throw new IllegalArgumentException("Token Error");
+                throw new BusinessExceptionHandler(ErrorCode.TOKEN_ERROR);
             }
 
 
             User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                    () -> new IllegalArgumentException("사용자가 존재하지 않습니다.")
+                    () -> new BusinessExceptionHandler(ErrorCode.USER_ERROR)
             );
             Blog blog = checkblog(id);
+            UserRoleEnum userRoleEnum = user.getRole();
             if(user.getUsername().equals(blog.getUsername())) {
                 blogRepository.deleteById(id);
-                return new BlogDeleteDto("게시글 삭제 성공.", 200);
+                return new ResponseCodeDto("게시글 삭제 성공.", 200);
+            }
+            else if(userRoleEnum == UserRoleEnum.ADMIN){
+                blogRepository.deleteById(id);
+                return new ResponseCodeDto("관리자가 게시글 삭제 성공.", 200);
             }
             else{
-                return new BlogDeleteDto("게시글 작성자가 아닙니다.", 400);
+                throw new BusinessExceptionHandler(ErrorCode.MODIFY_ERROR);
             }
 
 
         }else{
-            return new BlogDeleteDto("토큰값이 존재하지 않습니다.", 400);
+            throw new BusinessExceptionHandler(ErrorCode.TOKEN_NULL_ERROR);
         }
 
     }

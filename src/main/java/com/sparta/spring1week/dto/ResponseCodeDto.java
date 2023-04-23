@@ -5,11 +5,11 @@ import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class BlogDeleteDto {
+public class ResponseCodeDto {
     private String msg;
     private int statusCod;
 
-    public BlogDeleteDto(String msg, int statusCod) {
+    public ResponseCodeDto(String msg, int statusCod) {
         this.msg = msg;
         this.statusCod = statusCod;
     }

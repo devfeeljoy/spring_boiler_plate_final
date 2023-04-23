@@ -7,12 +7,16 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @NoArgsConstructor
-@Entity(name = "users")
+@Table(name ="users") //강의에서도 했지만 table명 user로하면 오류가난다.(기본값 사용)
+@Entity // User 클래스 MYsql에 생성
 public class User {
 
-    @Id
+    @Id //primary key
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -27,6 +31,9 @@ public class User {
     @Column(nullable = false)
     @Enumerated(value = EnumType.STRING)
     private UserRoleEnum role;
+
+    //@OneToMany
+    //private List<Comment> comments = new ArrayList<>();
 
     public User(String username, String password, UserRoleEnum role ) {
         this.username = username;

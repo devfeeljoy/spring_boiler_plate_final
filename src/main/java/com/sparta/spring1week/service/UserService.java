@@ -6,6 +6,8 @@ import com.sparta.spring1week.dto.SignupRequestDto;
 import com.sparta.spring1week.dto.SignupResponseDto;
 import com.sparta.spring1week.entity.User;
 import com.sparta.spring1week.entity.UserRoleEnum;
+import com.sparta.spring1week.exception.BusinessExceptionHandler;
+import com.sparta.spring1week.exception.ErrorCode;
 import com.sparta.spring1week.jwt.JwtUtil;
 import com.sparta.spring1week.repository.UserRepository;
 import jakarta.servlet.http.HttpServlet;
@@ -34,13 +36,13 @@ public class UserService {
         //Optional 공부가 필요
         if (found.isPresent()) {
 
-            return new SignupResponseDto("이미 존재한는 아이디입니다.", 400);
+            throw new BusinessExceptionHandler(ErrorCode.USER_DUF_ERROR);
         }
 
         UserRoleEnum role = UserRoleEnum.USER;
         if (signupRequestDto.isAdmin()) {
             if (!signupRequestDto.getAdminToken().equals(ADMIN_TOKEN)) {
-                throw new IllegalArgumentException("관리자 암호가 틀려 등록이 불가능합니다.");
+                throw new BusinessExceptionHandler(ErrorCode.ADMIN_ERROR);
             }
             role = UserRoleEnum.ADMIN;
         }
@@ -59,11 +61,11 @@ public class UserService {
 
         // 사용자 확인
         User user = userRepository.findByUsername(username).orElseThrow(
-                () -> new IllegalArgumentException("등록된 사용자가 없습니다.")
+                () -> new BusinessExceptionHandler(ErrorCode.USER_ERROR)
         );
         // 비밀번호 확인
         if(!user.getPassword().equals(password)){
-            throw  new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new BusinessExceptionHandler(ErrorCode.USER_PASSWORD_ERROR);
         }
 
         response.addHeader(JwtUtil.AUTHORIZATION_HEADER, jwtUtil.createToken(user.getUsername(), user.getRole()));

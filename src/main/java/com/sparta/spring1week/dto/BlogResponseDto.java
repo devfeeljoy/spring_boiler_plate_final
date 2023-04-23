@@ -1,10 +1,12 @@
 package com.sparta.spring1week.dto;
 
 import com.sparta.spring1week.entity.Blog;
+import com.sparta.spring1week.entity.Comment;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @NoArgsConstructor
@@ -15,7 +17,7 @@ public class BlogResponseDto {
     private String contents;
     private LocalDateTime CreatedAt;
     private LocalDateTime ModifiedAt;
-
+    private List<Comment> comment;
 
     public BlogResponseDto(Blog blog) {
         this.CreatedAt = blog.getCreatedAt();
@@ -24,6 +26,7 @@ public class BlogResponseDto {
         this.title = blog.getTitle();
         this.username = blog.getUsername();
         this.contents = blog.getContents();
+        this.comment = blog.getComment();
 
     }
 
