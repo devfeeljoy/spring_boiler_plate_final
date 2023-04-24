@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @Entity
 @NoArgsConstructor
-@JsonIgnoreProperties({"blog", "user"})
+@JsonIgnoreProperties({"blog", "user"}) //순환참조 해결
 public class Comment extends Timestamped{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
