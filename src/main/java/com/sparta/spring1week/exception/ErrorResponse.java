@@ -19,20 +19,13 @@ public class ErrorResponse {
     private String divisionCode;        // 에러 구분 코드
     private String resultMsg;           // 에러 메시지
     private List<FieldError> errors;    // 상세 에러 메시지
-    private String reason;              // 에러 이유
+    //private String reason;              // 에러 이유
 
     /**
      * ErrorResponse 생성자-1
      *
      * @param code ErrorCode
      */
-    @Builder
-    protected ErrorResponse(final ErrorCode code) {
-        this.resultMsg = code.getMessage();
-        this.status = code.getStatus();
-        this.divisionCode = code.getDivisionCode();
-        this.errors = new ArrayList<>();
-    }
 
     /**
      * ErrorResponse 생성자-2
@@ -41,11 +34,11 @@ public class ErrorResponse {
      * @param reason String
      */
     @Builder
-    protected ErrorResponse(final ErrorCode code, final String reason) {
+    protected ErrorResponse(final ErrorCode code) {
         this.resultMsg = code.getMessage();
         this.status = code.getStatus();
         this.divisionCode = code.getDivisionCode();
-        this.reason = reason;
+       // this.reason = reason;
     }
 
     /**
@@ -70,8 +63,8 @@ public class ErrorResponse {
      * @param bindingResult BindingResult
      * @return ErrorResponse
      */
-    public static ErrorResponse of(final ErrorCode code, final BindingResult bindingResult) {
-        return new ErrorResponse(code, FieldError.of(bindingResult));
+    public static ErrorResponse of(final ErrorCode code) {
+        return new ErrorResponse(code);
     }
 
     /**
@@ -80,9 +73,9 @@ public class ErrorResponse {
      * @param code ErrorCode
      * @return ErrorResponse
      */
-    public static ErrorResponse of(final ErrorCode code) {
-        return new ErrorResponse(code);
-    }
+   // public static ErrorResponse of(final ErrorCode code) {
+     //   return new ErrorResponse(code);
+    //}
 
     /**
      * Global Exception 전송 타입-3
@@ -91,9 +84,9 @@ public class ErrorResponse {
      * @param reason String
      * @return ErrorResponse
      */
-    public static ErrorResponse of(final ErrorCode code, final String reason) {
-        return new ErrorResponse(code, reason);
-    }
+   // public static ErrorResponse of(final ErrorCode code, final String reason) {
+      //  return new ErrorResponse(code, reason);
+  //  }
 
 
     /**

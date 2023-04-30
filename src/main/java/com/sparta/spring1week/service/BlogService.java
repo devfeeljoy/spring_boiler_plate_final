@@ -6,7 +6,7 @@ import com.sparta.spring1week.dto.BlogResponseDto;
 import com.sparta.spring1week.entity.Blog;
 import com.sparta.spring1week.entity.User;
 import com.sparta.spring1week.entity.UserRoleEnum;
-import com.sparta.spring1week.exception.BusinessExceptionHandler;
+import com.sparta.spring1week.exception.BusinessException;
 import com.sparta.spring1week.exception.ErrorCode;
 import com.sparta.spring1week.jwt.JwtUtil;
 import com.sparta.spring1week.repository.BlogRepository;
@@ -25,40 +25,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BlogService {
     private final BlogRepository blogRepository;
-    private final UserRepository userRepository;
-    private final CommentRepository commentRepository;
-    private final JwtUtil jwtUtil;
-
 
     //BlogRensponseDto를 사용하여 password빼고 추출
     @Transactional
-    public BlogResponseDto createList(BlogRequestDto requestDto, HttpServletRequest request) {
-
-        String token = jwtUtil.resolveToken(request);
-        Claims claims;
-
-        if(token != null){
-            if(jwtUtil.validateToken(token)){
-                claims = jwtUtil.getUserInfoFromToken(token);
-            } else{
-                throw new BusinessExceptionHandler(ErrorCode.TOKEN_ERROR);
-            }
-
-
-        User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                () -> new BusinessExceptionHandler(ErrorCode.USER_ERROR)
-        );
+    public BlogResponseDto createList(BlogRequestDto requestDto, User user) {
 
         // username 받아온 값을 추가, user값 추가(user의 주소?)
-        Blog blog =  blogRepository.saveAndFlush(new Blog(requestDto, user.getUsername(), user));
-
+        Blog blog =  blogRepository.saveAndFlush(new Blog(requestDto, user));
 
         return new BlogResponseDto(blog);
-        }else{
-            throw new BusinessExceptionHandler(ErrorCode.TOKEN_NULL_ERROR);
-        }
 
-}
+
+    }
 
 
     public List<BlogResponseDto> getlist(){
@@ -73,8 +51,6 @@ public class BlogService {
         return blogResponseDto;
     }
 
-
-
     public BlogResponseDto getidlist(Long id) {
         Blog blog = checkblog(id);
 
@@ -82,29 +58,11 @@ public class BlogService {
     }
 
 
-
-
     @Transactional
-    public BlogResponseDto updateBlog(Long id, BlogRequestDto requestDto, HttpServletRequest request) {
-        String token = jwtUtil.resolveToken(request);
-        Claims claims;
-
-        if (token != null) {
-            if (jwtUtil.validateToken(token)) {
-                claims = jwtUtil.getUserInfoFromToken(token);
-            } else {
-                throw new BusinessExceptionHandler(ErrorCode.TOKEN_ERROR);
-            }
-
-
-            User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                    () -> new BusinessExceptionHandler(ErrorCode.USER_ERROR)
-
-            );
+    public BlogResponseDto updateBlog(Long id, BlogRequestDto requestDto, User user) {
 
 
             UserRoleEnum userRoleEnum = user.getRole();
-            System.out.println("role = " + userRoleEnum);
 
             Blog blog = checkblog(id);
             if(user.getUsername().equals(blog.getUsername())) {
@@ -115,37 +73,22 @@ public class BlogService {
                 return new BlogResponseDto(blog);
             }
             else{
-                throw new BusinessExceptionHandler(ErrorCode.MODIFY_ERROR);
+                throw new BusinessException(ErrorCode.MODIFY_ERROR);
             }
 
-        }else {
-            throw new BusinessExceptionHandler(ErrorCode.TOKEN_NULL_ERROR);
-        }
     }
 
     private Blog checkblog(Long id) {
         return blogRepository.findById(id).orElseThrow(
-                () -> new BusinessExceptionHandler(ErrorCode.BLOG_ERROR)
+                () -> new BusinessException(ErrorCode.BLOG_ERROR)
         );
     }
 
 
     @Transactional
-    public ResponseCodeDto deleteBlog(Long id, HttpServletRequest request) {
-        String token = jwtUtil.resolveToken(request);
-        Claims claims;
-
-        if (token != null) {
-            if (jwtUtil.validateToken(token)) {
-                claims = jwtUtil.getUserInfoFromToken(token);
-            } else {
-                throw new BusinessExceptionHandler(ErrorCode.TOKEN_ERROR);
-            }
+    public ResponseCodeDto deleteBlog(Long id, User user) {
 
 
-            User user = userRepository.findByUsername(claims.getSubject()).orElseThrow(
-                    () -> new BusinessExceptionHandler(ErrorCode.USER_ERROR)
-            );
             Blog blog = checkblog(id);
             UserRoleEnum userRoleEnum = user.getRole();
             if(user.getUsername().equals(blog.getUsername())) {
@@ -157,14 +100,11 @@ public class BlogService {
                 return new ResponseCodeDto("관리자가 게시글 삭제 성공.", 200);
             }
             else{
-                throw new BusinessExceptionHandler(ErrorCode.MODIFY_ERROR);
+                throw new BusinessException(ErrorCode.MODIFY_ERROR);
             }
 
-
-        }else{
-            throw new BusinessExceptionHandler(ErrorCode.TOKEN_NULL_ERROR);
         }
 
     }
 
-}
+

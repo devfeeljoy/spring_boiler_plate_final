@@ -18,21 +18,21 @@ public class Comment extends Timestamped{
     private String contents;
     private String username;
 
-
-    @ManyToOne
+    //LAZY DB에안들리고
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "blogId", nullable = false)
 
     private Blog blog;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "userId", nullable = false)
     private User user;
 
-    public Comment(CommentRequestDto requestDto, String username,Blog blog, User user) {
+    public Comment(CommentRequestDto requestDto, Blog blog, User user) {
 
         this.contents = requestDto.getContents();
         //username을 받아오기위해 추가
-        this.username = username;
+        this.username = user.getUsername();
         this.blog = blog;
         this.user = user;
 

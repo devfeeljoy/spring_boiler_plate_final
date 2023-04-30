@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class SignupRequestDto {
     @NotNull(message = "id는 필수 값입니다.")
-    //패턴의 정규식표현에 +를 붙여줘야한다.. 이것땜에 헤멤
+    //+ 혹은 $표시를 통해 정규식이 끝낫다는것을 알려줌.
     @Pattern(regexp = "[a-z0-9]+")
     @Size(min = 4, max = 10)
     private String username;
