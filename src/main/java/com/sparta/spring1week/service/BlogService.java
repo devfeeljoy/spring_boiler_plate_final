@@ -31,13 +31,9 @@ public class BlogService {
         // username 받아온 값을 추가, user값 추가(user의 주소?)
         Blog blog =  blogRepository.saveAndFlush(new Blog(requestDto, user));
 
-
-
         return new BlogResponseDto(blog);
 
-
     }
-
 
     public List<BlogResponseDto> getlist(){
         List<Blog> bloglist = blogRepository.findAllByOrderByModifiedAtDesc();
@@ -122,6 +118,8 @@ public class BlogService {
             likeBlog.setUser(user);
             likeRepository.save(likeBlog);
         }
+        //리스트 불러오는 부분이아니라 해당액션에 따라 blog에서 로직부분에서 해결해보면 어떨까?
+        //db 리소스 낭비가 있을것
         List<LikeBlog> count =  likeRepository.findAllByBlog(blog);
         blog.count(count.size());
 

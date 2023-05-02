@@ -38,8 +38,6 @@ public class Blog extends Timestamped{
     private List<Comment> comment;
 
 
-
-
     public Blog(BlogRequestDto requestDto, User user) {
 
         if (user.getId() == null || user.getId() <= 0) {
