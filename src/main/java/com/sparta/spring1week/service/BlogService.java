@@ -4,16 +4,13 @@ import com.sparta.spring1week.dto.ResponseCodeDto;
 import com.sparta.spring1week.dto.BlogRequestDto;
 import com.sparta.spring1week.dto.BlogResponseDto;
 import com.sparta.spring1week.entity.Blog;
+import com.sparta.spring1week.entity.LikeBlog;
 import com.sparta.spring1week.entity.User;
 import com.sparta.spring1week.entity.UserRoleEnum;
 import com.sparta.spring1week.exception.BusinessException;
 import com.sparta.spring1week.exception.ErrorCode;
-import com.sparta.spring1week.jwt.JwtUtil;
 import com.sparta.spring1week.repository.BlogRepository;
-import com.sparta.spring1week.repository.CommentRepository;
-import com.sparta.spring1week.repository.UserRepository;
-import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.HttpServletRequest;
+import com.sparta.spring1week.repository.LikeBlogRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BlogService {
     private final BlogRepository blogRepository;
+    private final LikeBlogRepository likeRepository;
 
     //BlogRensponseDto를 사용하여 password빼고 추출
     @Transactional
@@ -32,6 +30,8 @@ public class BlogService {
 
         // username 받아온 값을 추가, user값 추가(user의 주소?)
         Blog blog =  blogRepository.saveAndFlush(new Blog(requestDto, user));
+
+
 
         return new BlogResponseDto(blog);
 
@@ -104,6 +104,30 @@ public class BlogService {
             }
 
         }
+
+    @Transactional
+    public BlogResponseDto likeblog(Long id, User user) {
+
+        // username 받아온 값을 추가, user값 추가(user의 주소?)
+        Blog blog = blogRepository.findById(id).orElseThrow(
+                () -> new BusinessException(ErrorCode.BLOG_ERROR)
+        );
+
+        boolean exists = likeRepository.existsByBlogAndUser(blog, user);
+        if (exists){
+            likeRepository.deleteByBlogAndUser(blog, user);
+        }else{
+            LikeBlog likeBlog = new LikeBlog();
+            likeBlog.setBlog(blog);
+            likeBlog.setUser(user);
+            likeRepository.save(likeBlog);
+        }
+        List<LikeBlog> count =  likeRepository.findAllByBlog(blog);
+        blog.count(count.size());
+
+        return new BlogResponseDto(blog);
+
+    }
 
     }
 

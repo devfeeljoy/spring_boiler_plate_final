@@ -18,6 +18,7 @@ public class BlogResponseDto {
     private LocalDateTime CreatedAt;
     private LocalDateTime ModifiedAt;
     private List<Comment> comment;
+    private int likes;
 
     public BlogResponseDto(Blog blog) {
         this.CreatedAt = blog.getCreatedAt();
@@ -27,6 +28,7 @@ public class BlogResponseDto {
         this.username = blog.getUsername();
         this.contents = blog.getContents();
         this.comment = blog.getComment();
+        this.likes = blog.getLikes();
 
     }
 

@@ -29,4 +29,10 @@ public class CommentController {
     public ResponseCodeDto deleteblog(@PathVariable Long id,  @AuthenticationPrincipal UserDetailsImpl userDetails){
         return commentService.deletecomment(id, userDetails.getUser());
     }
+
+    @PostMapping("/api/comment/like/{id}")
+    public CommentResponseDto createcomment(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
+
+        return commentService.likecomment(id,  userDetails.getUser());
+    }
 }

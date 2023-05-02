@@ -45,6 +45,12 @@ public class BlogController {
         return blogService.deleteBlog(id, userDetails.getUser());
     }
 
+    @PostMapping("/api/post/like/{id}")
+    public BlogResponseDto createList(@PathVariable Long id, @AuthenticationPrincipal UserDetailsImpl userDetails){
+
+        return blogService.likeblog(id , userDetails.getUser());
+    }
+
 
 
 

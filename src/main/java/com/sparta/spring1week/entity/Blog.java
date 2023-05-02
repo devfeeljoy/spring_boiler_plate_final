@@ -18,12 +18,14 @@ import java.util.List;
 @NoArgsConstructor
 public class Blog extends Timestamped{
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
     private String title;
     private String username;
     private String contents;
+    private int likes;
 
     //하나의 유저는 여러 게시글을 가질수있다
     @ManyToOne //바로가져온다 fetchtype eager
@@ -48,7 +50,15 @@ public class Blog extends Timestamped{
         //username을 받아오기위해 추가
         this.username = user.getUsername();
         this.user = user;
+    }
 
+    public Blog(Long id) {
+        if (user.getId() == null || user.getId() <= 0) {
+            throw new BusinessException(ErrorCode.USER_ERROR);
+        }
+        //username을 받아오기위해 추가
+        this.username = user.getUsername();
+        this.user = user;
     }
 
     public void addcomment(List<Comment> comment){
@@ -56,9 +66,14 @@ public class Blog extends Timestamped{
     }
 
 
+
+
     public void update(BlogRequestDto requestDto){
         this.title = requestDto.getTitle();
         this.contents = requestDto.getContents();
+    }
 
+    public void count(int size) {
+        this.likes = size;
     }
 }

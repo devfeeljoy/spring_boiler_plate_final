@@ -16,6 +16,7 @@ public class CommentResponseDto{
     private String contents;
     private LocalDateTime CreatedAt;
     private LocalDateTime ModifiedAt;
+    private int likes;
 
     public CommentResponseDto(Comment comment) {
         this.id = comment.getId();
@@ -23,5 +24,6 @@ public class CommentResponseDto{
         this.CreatedAt = comment.getCreatedAt();
         this.ModifiedAt = comment.getModifiedAt();
         this.username = comment.getUsername();
+        this.likes = comment.getLikes();
     }
 }

@@ -17,6 +17,7 @@ public class Comment extends Timestamped{
     private Long id;
     private String contents;
     private String username;
+    private int likes;
 
     //LAZY DB에안들리고
     @ManyToOne(fetch = FetchType.LAZY)
@@ -44,5 +45,7 @@ public class Comment extends Timestamped{
     }
 
 
-
+    public void count(int size) {
+        this.likes = size;
+    }
 }

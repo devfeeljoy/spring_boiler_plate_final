@@ -3,18 +3,12 @@ package com.sparta.spring1week.service;
 import com.sparta.spring1week.dto.ResponseCodeDto;
 import com.sparta.spring1week.dto.CommentRequestDto;
 import com.sparta.spring1week.dto.CommentResponseDto;
-import com.sparta.spring1week.entity.Blog;
-import com.sparta.spring1week.entity.Comment;
-import com.sparta.spring1week.entity.User;
-import com.sparta.spring1week.entity.UserRoleEnum;
+import com.sparta.spring1week.entity.*;
 import com.sparta.spring1week.exception.BusinessException;
 import com.sparta.spring1week.exception.ErrorCode;
-import com.sparta.spring1week.jwt.JwtUtil;
 import com.sparta.spring1week.repository.BlogRepository;
 import com.sparta.spring1week.repository.CommentRepository;
-import com.sparta.spring1week.repository.UserRepository;
-import io.jsonwebtoken.Claims;
-import jakarta.servlet.http.HttpServletRequest;
+import com.sparta.spring1week.repository.LikeCommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +21,7 @@ public class CommentService {
 
     private final CommentRepository commentRepository;
     private final BlogRepository blogRepository;
+    private final LikeCommentRepository likeCommentRepository;
 
 
     public CommentResponseDto createcomment(CommentRequestDto requestDto, User user) {
@@ -83,5 +78,26 @@ public class CommentService {
             throw new BusinessException(ErrorCode.MODIFY_ERROR);
         }
 
+    }
+
+    public CommentResponseDto likecomment(Long id, User user) {
+        // username 받아온 값을 추가, user값 추가(user의 주소?)
+        Comment comment = commentRepository.findById(id).orElseThrow(
+                () -> new BusinessException(ErrorCode.COMMENT_ERROR)
+        );
+
+        boolean exists = likeCommentRepository.existsByCommentAndUser(comment, user);
+        if (exists){
+            likeCommentRepository.deleteByCommentAndUser(comment, user);
+        }else{
+            LikeComment likecomment = new LikeComment();
+            likecomment.setBlog(comment);
+            likecomment.setUser(user);
+            likeCommentRepository.save(likecomment);
+        }
+        List<LikeComment> count =  likeCommentRepository.findAllByComment(comment);
+        comment.count(count.size());
+
+        return new CommentResponseDto(comment);
     }
 }
