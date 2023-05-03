@@ -32,7 +32,7 @@ public class Blog extends Timestamped{
     @JoinColumn(name="userId", nullable = false)
     private User user; // DB에서 오브젝트 저장할수 없다. FK를 사용
 
-    //하나의 게시글은 여러 댓글으 가질수 있다
+    //하나의 게시글은 여러 댓글을 가질수 있다
     @OneToMany(mappedBy = "blog", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)//mappedBy가 적히면 연관관계의 주인이아니다(fk가 아님) DB에 컬럼을 만들지 않는다. 부모가 삭제시 자식도 삭제cascade
     //select시 join해서 정보만 가져온다.
     private List<Comment> comment;

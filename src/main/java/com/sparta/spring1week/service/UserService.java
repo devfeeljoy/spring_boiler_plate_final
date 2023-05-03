@@ -74,4 +74,27 @@ public class UserService {
         return new LoginResponseDto("로그인에 성공하셨습니다.", 200);
 
     }
+    @Transactional
+    public LoginResponseDto deleteuser(LoginRequestDto loginRequestDto, User user) {
+        String username = loginRequestDto.getUsername();
+        String password = loginRequestDto.getPassword();
+        System.out.println("**************************");
+        System.out.println(username);
+        System.out.println(user.getUsername());
+        System.out.println("**************************");
+
+        // 비밀번호 확인
+        if(!passwordEncoder.matches(password, user.getPassword())){
+            throw new BusinessException(ErrorCode.USER_PASSWORD_ERROR);
+        }
+
+        if(username.equals(user.getUsername())){
+            System.out.println("들어오나?");
+            userRepository.deleteByUsername(username);
+        }
+        else{
+            throw new BusinessException(ErrorCode.USER_ERROR);
+        }
+        return new LoginResponseDto("회원탈퇴가 완료되었습니다", 200);
+    }
 }
